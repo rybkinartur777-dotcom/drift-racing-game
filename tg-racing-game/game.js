@@ -77,11 +77,19 @@ function saveScoreToFirebase() {
     };
 
     // Save only if it's a better score
-    db.ref('leaderboard/' + userId).transaction((currentData) => {
+    const userRef = db.ref('leaderboard/' + userId);
+    userRef.transaction((currentData) => {
         if (currentData === null || userData.score > currentData.score) {
             return userData;
         } else {
-            return; // Abort if existing score is higher
+            return; // Abort
+        }
+    }, (error, committed, snapshot) => {
+        if (error) {
+            console.error('Save failed', error);
+            // alert('Ошибка сохранения: ' + error.message); // Uncomment for debugging
+        } else if (committed) {
+            console.log('Score saved!');
         }
     });
 }
