@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🏎️ Drift Racing</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Главное меню -->
+    <div id="mainMenu" class="screen active">
+        <div class="menu-background">
+            <div class="racing-lines"></div>
+        </div>
+        <div class="menu-content">
+            <div class="logo-container">
+                <h1 class="game-logo">DRIFT<span>RACING</span></h1>
+                <div class="logo-underline"></div>
+            </div>
+
+            <div class="player-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">🪙</span>
+                    <span id="menuCoins" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🏆</span>
+                    <span id="menuBestScore" class="stat-value">0</span>
+                </div>
+            </div>
+
+            <div class="menu-buttons">
+                <button class="menu-btn play-btn" onclick="startGame()">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">ИГРАТЬ</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('garageScreen')">
+                    <span class="btn-icon">🚗</span>
+                    <span class="btn-text">ГАРАЖ</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('upgradesScreen')">
+                    <span class="btn-icon">⚡</span>
+                    <span class="btn-text">УЛУЧШЕНИЯ</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('leaderboardScreen')">
+                    <span class="btn-icon">🏆</span>
+                    <span class="btn-text">РЕЙТИНГ</span>
+                </button>
+                <button class="menu-btn" onclick="showScreen('settingsScreen')">
+                    <span class="btn-icon">⚙️</span>
+                    <span class="btn-text">НАСТРОЙКИ</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран гаража -->
+    <div id="garageScreen" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">←</button>
+            <h2>🚗 ГАРАЖ</h2>
+            <div class="coins-display">🪙 <span id="garageCoins">0</span></div>
+        </div>
+        <div class="garage-content">
+            <div class="car-preview">
+                <div id="previewCar" class="preview-car"></div>
+                <div id="carName" class="car-name">Starter</div>
+                <div id="carStats" class="car-stats-preview"></div>
+            </div>
+            <div id="carsList" class="cars-grid"></div>
+        </div>
+    </div>
+
+    <!-- Экран улучшений -->
+    <div id="upgradesScreen" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">←</button>
+            <h2>⚡ УЛУЧШЕНИЯ</h2>
+            <div class="coins-display">🪙 <span id="upgradesCoins">0</span></div>
+        </div>
+        <div class="upgrades-content">
+            <div class="upgrade-item" data-upgrade="speed">
+                <div class="upgrade-icon">🚀</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Скорость</div>
+                    <div class="upgrade-level">Уровень: <span id="speedLevel">1</span>/10</div>
+                    <div class="upgrade-bar">
+                        <div id="speedBar" class="upgrade-progress"></div>
+                    </div>
+                </div>
+                <button class="upgrade-btn" onclick="buyUpgrade('speed')">
+                    <span id="speedCost">100</span> 🪙
+                </button>
+            </div>
+            <div class="upgrade-item" data-upgrade="handling">
+                <div class="upgrade-icon">🎯</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Управление</div>
+                    <div class="upgrade-level">Уровень: <span id="handlingLevel">1</span>/10</div>
+                    <div class="upgrade-bar">
+                        <div id="handlingBar" class="upgrade-progress"></div>
+                    </div>
+                </div>
+                <button class="upgrade-btn" onclick="buyUpgrade('handling')">
+                    <span id="handlingCost">100</span> 🪙
+                </button>
+            </div>
+            <div class="upgrade-item" data-upgrade="nitro">
+                <div class="upgrade-icon">💨</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Нитро</div>
+                    <div class="upgrade-level">Уровень: <span id="nitroLevel">1</span>/10</div>
+                    <div class="upgrade-bar">
+                        <div id="nitroBar" class="upgrade-progress"></div>
+                    </div>
+                </div>
+                <button class="upgrade-btn" onclick="buyUpgrade('nitro')">
+                    <span id="nitroCost">100</span> 🪙
+                </button>
+            </div>
+            <div class="upgrade-item" data-upgrade="coins">
+                <div class="upgrade-icon">🪙</div>
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Заработок</div>
+                    <div class="upgrade-level">Уровень: <span id="coinsLevel">1</span>/10</div>
+                    <div class="upgrade-bar">
+                        <div id="coinsBar" class="upgrade-progress"></div>
+                    </div>
+                </div>
+                <button class="upgrade-btn" onclick="buyUpgrade('coins')">
+                    <span id="coinsCost">100</span> 🪙
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран рейтинга -->
+    <div id="leaderboardScreen" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">←</button>
+            <h2>🏆 РЕЙТИНГ</h2>
+            <div class="coins-display">🪙 <span id="leaderCoins">0</span></div>
+        </div>
+        <div class="leaderboard-content">
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" onclick="switchTab('daily')">Сегодня</button>
+                <button class="tab-btn" onclick="switchTab('weekly')">Неделя</button>
+                <button class="tab-btn" onclick="switchTab('alltime')">Всё время</button>
+            </div>
+            <div id="leaderboardList" class="leaderboard-list"></div>
+        </div>
+    </div>
+
+    <!-- Экран настроек -->
+    <div id="settingsScreen" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="showScreen('mainMenu')">←</button>
+            <h2>⚙️ НАСТРОЙКИ</h2>
+        </div>
+        <div class="settings-content">
+            <div class="setting-item">
+                <span class="setting-label">🔊 Звуки</span>
+                <label class="toggle">
+                    <input type="checkbox" id="soundToggle" checked onchange="toggleSound()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">🎵 Музыка</span>
+                <label class="toggle">
+                    <input type="checkbox" id="musicToggle" checked onchange="toggleMusic()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">📳 Вибрация</span>
+                <label class="toggle">
+                    <input type="checkbox" id="vibrationToggle" checked onchange="toggleVibration()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item difficulty-setting">
+                <span class="setting-label">🎮 Сложность</span>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn" data-diff="easy" onclick="setDifficulty('easy')">Легко</button>
+                    <button class="diff-btn active" data-diff="normal" onclick="setDifficulty('normal')">Норма</button>
+                    <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">Сложно</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Игровой экран -->
+    <div id="gameScreen" class="screen">
+        <div class="game-hud">
+            <div class="hud-left">
+                <div class="score-display">
+                    <span class="score-label">ОЧКИ</span>
+                    <span id="gameScore" class="score-value">0</span>
+                </div>
+                <div class="coins-earned">
+                    🪙 <span id="gameCoins">0</span>
+                </div>
+            </div>
+            <div class="hud-right">
+                <div class="speed-display">
+                    <span id="currentSpeed">0</span>
+                    <span class="speed-unit">км/ч</span>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="nitro-container">
+            <div class="nitro-bar">
+                <div id="nitroFill" class="nitro-fill"></div>
+            </div>
+            <span class="nitro-label">НИТРО</span>
+        </div>
+
+        <div class="game-controls">
+            <button id="leftBtn" class="control-btn left-btn">◀</button>
+            <button id="nitroBtn" class="control-btn nitro-btn">🔥</button>
+            <button id="rightBtn" class="control-btn right-btn">▶</button>
+        </div>
+    </div>
+
+    <!-- Экран паузы -->
+    <div id="pauseScreen" class="overlay-screen">
+        <div class="pause-content">
+            <h2>⏸️ ПАУЗА</h2>
+            <button class="menu-btn" onclick="resumeGame()">▶ Продолжить</button>
+            <button class="menu-btn" onclick="restartGame()">🔄 Заново</button>
+            <button class="menu-btn" onclick="exitToMenu()">🏠 В меню</button>
+        </div>
+    </div>
+
+    <!-- Экран Game Over -->
+    <div id="gameOverScreen" class="overlay-screen">
+        <div class="gameover-content">
+            <h2>💥 АВАРИЯ!</h2>
+            <div class="results">
+                <div class="result-item">
+                    <span class="result-label">Очки</span>
+                    <span id="finalScore" class="result-value">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Рекорд</span>
+                    <span id="bestScoreResult" class="result-value">0</span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="result-label">Заработано</span>
+                    <span id="earnedCoins" class="result-value">+0 🪙</span>
+                </div>
+            </div>
+            <div id="newRecord" class="new-record hidden">🎉 НОВЫЙ РЕКОРД! 🎉</div>
+            <div class="gameover-buttons">
+                <button class="menu-btn play-btn" onclick="restartGame()">🔄 ЕЩЁ РАЗ</button>
+                <button class="menu-btn" onclick="exitToMenu()">🏠 В МЕНЮ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>

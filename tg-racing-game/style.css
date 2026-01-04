@@ -1,0 +1,685 @@
+:root {
+    --primary: #ff4d4d;
+    --secondary: #00d4ff;
+    --accent: #ffd700;
+    --bg-dark: #0a0a0f;
+    --bg-card: #1a1a2e;
+    --bg-card-light: #252542;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0c0;
+    --gradient-fire: linear-gradient(135deg, #ff4d4d, #ff8800);
+    --gradient-neon: linear-gradient(135deg, #00d4ff, #7b2ff7);
+    --gradient-gold: linear-gradient(135deg, #ffd700, #ff8c00);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Russo One', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    user-select: none;
+}
+
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.overlay-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.overlay-screen.active {
+    display: flex;
+}
+
+.menu-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.racing-lines {
+    position: absolute;
+    width: 100%;
+    height: 200%;
+    background: repeating-linear-gradient(90deg, transparent, transparent 48%, rgba(255, 77, 77, 0.1) 48%, rgba(255, 77, 77, 0.1) 52%, transparent 52%);
+    animation: raceLines 2s linear infinite;
+}
+
+@keyframes raceLines {
+    0% {
+        transform: translateY(-50%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.menu-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+}
+
+.game-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.5rem, 10vw, 4rem);
+    font-weight: 900;
+    background: var(--gradient-fire);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.game-logo span {
+    display: block;
+    font-size: 0.5em;
+    background: var(--gradient-neon);
+    -webkit-background-clip: text;
+    letter-spacing: 8px;
+}
+
+.logo-underline {
+    width: 150px;
+    height: 4px;
+    background: var(--gradient-fire);
+    margin: 15px auto 30px;
+    border-radius: 2px;
+}
+
+.player-stats {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 15px 30px;
+    background: var(--bg-card);
+    border-radius: 15px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+}
+
+.stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    color: var(--accent);
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 24px;
+    font-family: 'Russo One', sans-serif;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.menu-btn:active {
+    transform: scale(0.98);
+}
+
+.menu-btn.play-btn {
+    background: var(--gradient-fire);
+    border: none;
+    font-size: 1.3rem;
+    padding: 20px;
+}
+
+.screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: var(--bg-card);
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    background: var(--bg-card-light);
+    border: none;
+    border-radius: 10px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.coins-display {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+}
+
+.garage-content,
+.upgrades-content,
+.settings-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.car-preview {
+    text-align: center;
+    padding: 30px;
+    background: var(--bg-card);
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.preview-car {
+    width: 100px;
+    height: 160px;
+    margin: 0 auto 20px;
+    border-radius: 10px;
+    background: var(--gradient-fire);
+}
+
+.car-name {
+    font-size: 1.5rem;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+}
+
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.car-card {
+    aspect-ratio: 1;
+    background: var(--bg-card);
+    border-radius: 15px;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.car-card.selected {
+    border-color: var(--accent);
+}
+
+.car-card.locked {
+    opacity: 0.5;
+}
+
+.car-card .car-icon {
+    font-size: 2.5rem;
+}
+
+.car-card .car-price {
+    font-size: 0.8rem;
+    color: var(--accent);
+}
+
+.upgrade-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.upgrade-icon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card-light);
+    border-radius: 12px;
+}
+
+.upgrade-info {
+    flex: 1;
+}
+
+.upgrade-name {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.upgrade-level {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.upgrade-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-dark);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.upgrade-progress {
+    height: 100%;
+    background: var(--gradient-neon);
+    border-radius: 4px;
+}
+
+.upgrade-btn {
+    padding: 12px 20px;
+    font-family: 'Russo One', sans-serif;
+    color: #000;
+    background: var(--gradient-gold);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.upgrade-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.leaderboard-content {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.leaderboard-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Russo One', sans-serif;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    color: var(--text-primary);
+    border-color: var(--primary);
+}
+
+.leaderboard-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.rank {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    background: var(--bg-dark);
+    border-radius: 50%;
+}
+
+.rank.gold {
+    background: var(--gradient-gold);
+    color: #000;
+}
+
+.rank.silver {
+    background: linear-gradient(135deg, #c0c0c0, #808080);
+}
+
+.rank.bronze {
+    background: linear-gradient(135deg, #cd7f32, #8b4513);
+}
+
+.player-info {
+    flex: 1;
+}
+
+.player-name {
+    font-size: 1rem;
+}
+
+.player-score {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.toggle {
+    position: relative;
+    width: 60px;
+    height: 32px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-dark);
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    left: 3px;
+    bottom: 3px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle input:checked+.toggle-slider {
+    background: var(--primary);
+}
+
+.toggle input:checked+.toggle-slider::before {
+    transform: translateX(28px);
+    background: #fff;
+}
+
+.difficulty-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.diff-btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Russo One', sans-serif;
+    color: var(--text-secondary);
+    background: var(--bg-dark);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.diff-btn.active {
+    color: var(--text-primary);
+    border-color: var(--secondary);
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.game-hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    z-index: 10;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.score-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.score-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: var(--accent);
+    display: block;
+}
+
+.coins-earned {
+    color: var(--accent);
+}
+
+#currentSpeed {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+}
+
+.speed-unit {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.nitro-container {
+    position: absolute;
+    bottom: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    z-index: 10;
+    text-align: center;
+}
+
+.nitro-bar {
+    width: 100%;
+    height: 15px;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.nitro-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--gradient-fire);
+    border-radius: 8px;
+}
+
+.nitro-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.game-controls {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.control-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--text-primary);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.control-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--primary);
+}
+
+.nitro-btn {
+    width: 70px;
+    height: 70px;
+    background: var(--gradient-fire);
+    border: none;
+}
+
+.pause-content,
+.gameover-content {
+    text-align: center;
+    padding: 30px;
+    background: var(--bg-card);
+    border-radius: 25px;
+    max-width: 320px;
+    width: 90%;
+}
+
+.pause-content h2,
+.gameover-content h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+}
+
+.pause-content .menu-btn,
+.gameover-content .menu-btn {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.results {
+    margin-bottom: 20px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.result-item.highlight {
+    background: var(--gradient-gold);
+    color: #000;
+}
+
+.result-value {
+    font-family: 'Orbitron', sans-serif;
+}
+
+.new-record {
+    padding: 15px;
+    background: var(--gradient-gold);
+    border-radius: 10px;
+    color: #000;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    animation: pulse 0.5s ease infinite alternate;
+}
+
+.new-record.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.05);
+    }
+}
