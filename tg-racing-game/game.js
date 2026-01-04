@@ -629,6 +629,19 @@ function gameOver() {
 
     saveGame();
 
+    // Send score to Telegram bot
+    if (tg && score > 0) {
+        try {
+            tg.sendData(JSON.stringify({
+                score: score,
+                coins: coinsEarned,
+                car: cars[gameState.selectedCar].name
+            }));
+        } catch (e) {
+            console.log('Could not send data to bot:', e);
+        }
+    }
+
     // Show game over screen
     document.getElementById('finalScore').textContent = score;
     document.getElementById('bestScoreResult').textContent = gameState.bestScore;
