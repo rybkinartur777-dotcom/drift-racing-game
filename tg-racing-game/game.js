@@ -26,13 +26,8 @@ const cars = [
 ];
 
 // ===== LEADERBOARD DATA =====
-let leaderboard = [
-    { name: 'Pro Racer', score: 15000, car: '👑' },
-    { name: 'Speed King', score: 12500, car: '⚡' },
-    { name: 'Drifter', score: 10000, car: '🏎️' },
-    { name: 'Fast Boy', score: 7500, car: '🏁' },
-    { name: 'Rookie', score: 5000, car: '🚗' }
-];
+// ===== LEADERBOARD DATA =====
+let leaderboard = [];
 
 // ===== LOAD/SAVE =====
 function loadGame() {
@@ -147,10 +142,12 @@ function buyUpgrade(type) {
 // ===== LEADERBOARD =====
 function updateLeaderboard() {
     const list = document.getElementById('leaderboardList');
-    const userName = tg?.initDataUnsafe?.user?.first_name || 'Ты';
+    // Используем ID или Имя
+    const user = tg?.initDataUnsafe?.user;
+    const displayName = user ? (user.username ? '@' + user.username : user.first_name) : 'Ты';
 
     // Add current player to leaderboard
-    let combined = [...leaderboard, { name: userName, score: gameState.bestScore, car: cars[gameState.selectedCar].icon, isPlayer: true }];
+    let combined = [...leaderboard, { name: displayName, score: gameState.bestScore, car: cars[gameState.selectedCar].icon, isPlayer: true }];
     combined.sort((a, b) => b.score - a.score);
     combined = combined.slice(0, 10);
 
@@ -158,7 +155,7 @@ function updateLeaderboard() {
         <div class="leaderboard-item ${i < 3 ? 'top-3' : ''} ${p.isPlayer ? 'current-user' : ''}">
             <span class="rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : ''}">${i + 1}</span>
             <div class="player-info">
-                <div class="player-name">${p.car} ${p.name}</div>
+                <div class="player-name">${p.name}</div>
             </div>
             <span class="player-score">${p.score}</span>
         </div>
