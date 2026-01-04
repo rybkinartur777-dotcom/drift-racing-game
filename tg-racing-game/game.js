@@ -422,9 +422,9 @@ function update() {
     player.velocityX = Math.max(-15, Math.min(15, player.velocityX));
     player.x += player.velocityX;
 
-    // Road boundaries
-    const roadLeft = canvas.width * 0.15;
-    const roadRight = canvas.width * 0.85;
+    // Road boundaries (4 lanes)
+    const roadLeft = canvas.width * 0.05; // Wider road
+    const roadRight = canvas.width * 0.95;
     if (player.x - player.width / 2 < roadLeft) {
         player.x = roadLeft + player.width / 2;
         player.velocityX = 0;
@@ -441,8 +441,13 @@ function update() {
     if (Math.random() < diff.spawnRate) {
         const obstacleTypes = ['car', 'truck', 'barrier'];
         const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+        // 4 lanes logic
+        const laneWidth = (roadRight - roadLeft) / 4;
+        const laneIndex = Math.floor(Math.random() * 4); // 0 to 3
+        const laneCenter = roadLeft + laneIndex * laneWidth + laneWidth / 2;
+
         obstacles.push({
-            x: roadLeft + Math.random() * (roadRight - roadLeft - 60),
+            x: laneCenter - (type === 'truck' ? 30 : 25), // Center obstacle in lane
             y: -100,
             width: type === 'truck' ? 60 : 50,
             height: type === 'truck' ? 120 : 80,
@@ -453,8 +458,12 @@ function update() {
 
     // Spawn coins
     if (Math.random() < 0.02) {
+        const laneWidth = (roadRight - roadLeft) / 4;
+        const laneIndex = Math.floor(Math.random() * 4);
+        const laneCenter = roadLeft + laneIndex * laneWidth + laneWidth / 2;
+
         roadCoins.push({
-            x: roadLeft + 30 + Math.random() * (roadRight - roadLeft - 60),
+            x: laneCenter,
             y: -30,
             collected: false
         });
@@ -507,8 +516,8 @@ function render() {
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const roadLeft = canvas.width * 0.15;
-    const roadRight = canvas.width * 0.85;
+    const roadLeft = canvas.width * 0.05;
+    const roadRight = canvas.width * 0.95;
     const roadWidth = roadRight - roadLeft;
 
     // Road
@@ -520,12 +529,16 @@ function render() {
     ctx.fillRect(roadLeft - 5, 0, 5, canvas.height);
     ctx.fillRect(roadRight, 0, 5, canvas.height);
 
-    // Animated road lines
+    // Animated road lines (3 separators for 4 lanes)
     const lineOffset = (roadOffset % 60);
     ctx.fillStyle = '#ffffff33';
-    for (let y = -60 + lineOffset; y < canvas.height + 60; y += 60) {
-        ctx.fillRect(roadLeft + roadWidth * 0.25 - 3, y, 6, 30);
-        ctx.fillRect(roadLeft + roadWidth * 0.75 - 3, y, 6, 30);
+
+    // Draw 3 dividers
+    for (let i = 1; i < 4; i++) {
+        const x = roadLeft + (roadWidth * i / 4);
+        for (let y = -60 + lineOffset; y < canvas.height + 60; y += 60) {
+            ctx.fillRect(x - 3, y, 6, 30);
+        }
     }
 
     // Coins
