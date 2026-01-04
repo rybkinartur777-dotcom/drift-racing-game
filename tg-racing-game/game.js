@@ -523,43 +523,210 @@ function render() {
     // Coins
     roadCoins.forEach(coin => {
         if (coin.collected) return;
+        ctx.save();
+        ctx.translate(coin.x, coin.y);
+
+        // Gold Coin
         ctx.beginPath();
-        ctx.arc(coin.x, coin.y, 15, 0, Math.PI * 2);
+        ctx.arc(0, 0, 15, 0, Math.PI * 2);
         ctx.fillStyle = '#ffd700';
         ctx.fill();
-        ctx.fillStyle = '#000';
-        ctx.font = 'bold 14px Arial';
+        ctx.strokeStyle = '#daa520';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Inner detail
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.strokeStyle = '#fff8dc';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#b8860b';
+        ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('$', coin.x, coin.y + 5);
+        ctx.textBaseline = 'middle';
+        ctx.fillText('$', 0, 1);
+        ctx.restore();
     });
 
-    // Obstacles ... (simplified rendering logic for clarity)
+    // Obstacles
     obstacles.forEach(obs => {
-        ctx.fillStyle = obs.color;
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        ctx.save();
+        ctx.translate(obs.x + obs.width / 2, obs.y + obs.height / 2);
+        // Draw Enemy Car
+        drawCarSprite(ctx, 0, 0, obs.width, obs.height, obs.color, obs.type === 'truck');
+        ctx.restore();
     });
 
     // Player car
+    const car = cars[gameState.selectedCar];
     ctx.save();
     ctx.translate(player.x, player.y);
     ctx.rotate(player.angle);
 
-    // Simple car rendering
-    const car = cars[gameState.selectedCar];
-    ctx.fillStyle = car.color;
-    ctx.fillRect(-player.width / 2, -player.height / 2, player.width, player.height);
+    // Draw Player Car (more detailed)
+    drawCarSprite(ctx, 0, 0, player.width, player.height, car.color, false, true);
 
     // Nitro flames
     if (nitroActive) {
-        ctx.fillStyle = '#ff4400';
-        ctx.beginPath();
-        ctx.moveTo(-10, player.height / 2);
-        ctx.lineTo(0, player.height / 2 + 20);
-        ctx.lineTo(10, player.height / 2);
-        ctx.fill();
+        ctx.save();
+        ctx.translate(0, player.height / 2);
+        for (let i = 0; i < 2; i++) {
+            const offset = i === 0 ? -10 : 10;
+            ctx.fillStyle = Math.random() > 0.5 ? '#00ffff' : '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(offset - 2, 0);
+            ctx.lineTo(offset, 20 + Math.random() * 15);
+            ctx.lineTo(offset + 2, 0);
+            ctx.fill();
+
+            ctx.fillStyle = '#ff4400';
+            ctx.beginPath();
+            ctx.moveTo(offset - 4, 0);
+            ctx.lineTo(offset, 10 + Math.random() * 10);
+            ctx.lineTo(offset + 4, 0);
+            ctx.fill();
+        }
+        ctx.restore();
     }
 
     ctx.restore();
+
+    // Speed lines
+    if (currentSpeed > 150 || nitroActive) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 5; i++) {
+            const x = roadLeft + Math.random() * roadWidth;
+            const y = Math.random() * canvas.height;
+            const len = 50 + Math.random() * 100;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y + len);
+            ctx.stroke();
+        }
+    }
+}
+
+// Helper to draw a detailed car
+function drawCarSprite(ctx, x, y, w, h, color, isTruck = false, isPlayer = false) {
+    const halfW = w / 2;
+    const halfH = h / 2;
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(-halfW + 5, -halfH + 5, w, h);
+
+    // Tires
+    ctx.fillStyle = '#111';
+    const tireW = w * 0.2;
+    const tireH = h * 0.2;
+    const tireInsetX = halfW + 2;
+    const tireInsetY = halfH * 0.6;
+
+    // FL, FR, RL, RR
+    ctx.fillRect(-tireInsetX, -tireInsetY, tireW, tireH);
+    ctx.fillRect(tireInsetX - tireW, -tireInsetY, tireW, tireH);
+    ctx.fillRect(-tireInsetX, tireInsetY - tireH, tireW, tireH);
+    ctx.fillRect(tireInsetX - tireW, tireInsetY - tireH, tireW, tireH);
+
+    // Main Body
+    // Gradient for 3D effect
+    // We assume context is translated to center
+    // but gradients work better with absolute coords or simple relative fill
+    ctx.fillStyle = color;
+
+    // Base shape
+    if (isTruck) {
+        // Truck body
+        ctx.fillRect(-halfW, -halfH, w, h);
+        // Truck Bed (darker)
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillRect(-halfW + 4, 0, w - 8, halfH - 4);
+    } else {
+        // Sport shape (rounded)
+        ctx.beginPath();
+        ctx.roundRect(-halfW, -halfH, w, h, 8);
+        ctx.fill();
+
+        // Side skirts / details
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fillRect(-halfW, -halfH * 0.6, 4, h * 0.6);
+        ctx.fillRect(halfW - 4, -halfH * 0.6, 4, h * 0.6);
+    }
+
+    // Cabin / Roof
+    ctx.fillStyle = color; // Reset color
+    const roofW = w * (isTruck ? 0.9 : 0.8);
+    const roofH = h * (isTruck ? 0.35 : 0.45);
+    const roofY = isTruck ? -halfH + 10 : -5;
+
+    // Windshield Area
+    ctx.fillStyle = '#111'; // Window seal/glass base
+    ctx.fillRect(-roofW / 2 - 1, roofY - 1, roofW + 2, roofH + 2);
+
+    // Glass
+    ctx.fillStyle = isPlayer ? '#22aadd' : '#445566'; // Blue tint for player
+    ctx.fillRect(-roofW / 2, roofY, roofW, roofH);
+
+    // Shine on glass
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.beginPath();
+    ctx.moveTo(-roofW / 2, roofY);
+    ctx.lineTo(-roofW / 2 + 10, roofY);
+    ctx.lineTo(-roofW / 2, roofY + 15);
+    ctx.fill();
+
+    // Roof Top (Body color painted)
+    if (!isTruck) { // Sedans have painted roof
+        ctx.fillStyle = color;
+        ctx.fillRect(-roofW / 2 + 2, roofY + 5, roofW - 4, roofH - 12);
+    }
+
+    // Lights
+    // Headlights
+    ctx.fillStyle = isPlayer ? '#ccffff' : '#ffffaa';
+    ctx.beginPath();
+    if (isTruck) {
+        ctx.rect(-halfW + 2, -halfH + 1, 10, 5);
+        ctx.rect(halfW - 12, -halfH + 1, 10, 5);
+    } else {
+        // Angled lights for sport car
+        ctx.moveTo(-halfW + 4, -halfH);
+        ctx.lineTo(-halfW + 12, -halfH);
+        ctx.lineTo(-halfW + 10, -halfH + 8);
+        ctx.lineTo(-halfW + 2, -halfH + 6);
+
+        ctx.moveTo(halfW - 4, -halfH);
+        ctx.lineTo(halfW - 12, -halfH);
+        ctx.lineTo(halfW - 10, -halfH + 8);
+        ctx.lineTo(halfW - 2, -halfH + 6);
+    }
+    ctx.fill();
+
+    // Headlight glow
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.beginPath();
+    ctx.arc(-halfW + 8, -halfH, 15, 0, Math.PI * 2);
+    ctx.arc(halfW - 8, -halfH, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Taillights
+    ctx.fillStyle = '#cc0000';
+    ctx.fillRect(-halfW + 4, halfH - 4, 12, 4);
+    ctx.fillRect(halfW - 16, halfH - 4, 12, 4);
+
+    // Spoiler (if player or expensive car)
+    if (isPlayer) {
+        ctx.fillStyle = color; // Wing color
+        // Wing supports
+        ctx.fillRect(-halfW + 10, halfH - 8, 4, 8);
+        ctx.fillRect(halfW - 14, halfH - 8, 4, 8);
+        // Wing blade (darker)
+        ctx.fillStyle = '#000000'; // Carbon fiber look
+        ctx.fillRect(-halfW, halfH - 10, w, 4);
+    }
 }
 
 function updateGameUI() {
